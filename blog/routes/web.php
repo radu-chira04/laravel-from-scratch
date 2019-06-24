@@ -11,22 +11,28 @@
 |
 */
 
-Route::get('/', function () {
-    $tasks = [
-        'go to the store',
-        'go to the market',
-        'go to work',
-        'go to concert'
-    ];
-    return view('welcome', ['tasks' => $tasks, 'user' => 'tstUser']);
-});
+Route::get('/', 'PageController@home');
+Route::get('/contact', 'PageController@contact');
+Route::get('/about', 'PageController@about');
+
+//Route::get('/', function () {
+//    $tasks = [
+//        'go to the store',
+//        'go to the market',
+//        'go to work',
+//        'go to concert'
+//    ];
+//    //return view('welcome')->withTasks($tasks)->withUser('user');
+//    return view('welcome', ['tasks' => $tasks, 'user' => 'tstUser']);
+//});
 
 
-Route::get('/contact', function () {
-    return view('contact');
-});
+//Route::get('/contact', function () {
+//    return view('contact');
+//});
 
 
-Route::get('/about', function () {
-    return view('about');
-});
+//Route::get('/about', function () {
+//    return view('about');
+//});
+
