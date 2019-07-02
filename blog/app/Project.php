@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class FlightModel extends Model
+class Project extends Model
 {
-    //
+
 }

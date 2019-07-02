@@ -60,6 +60,7 @@
     <li><a href="/"> home </a></li>
     <li><a href="/about"> about us </a></li>
     <li><a href="/contact"> contact </a></li>
+    <li><a href="/projects"> show projects </a></li>
 </ul>
 <br/><br/>
 
