@@ -16,3 +16,8 @@ use Illuminate\Foundation\Inspiring;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->describe('Display an inspiring quote');
+
+Artisan::command('foobar', function () {
+    $this->comment('I have been triggered');
+})->describe('Relplies to you when called');
+
