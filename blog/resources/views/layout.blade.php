@@ -35,10 +35,27 @@
         #Menu a:hover {
             color: White;
         }
+
+        .list {
+            background-color:#fff;
+            margin:20px auto;
+            width:100%;
+            max-width:500px;
+            padding:20px;
+            border-radius:2px;
+            box-shadow:3px 3px 0 rgba(0, 0, 0, .1);
+            box-sizing:border-box;
+        }
+
+        body {
+            background-color: #F8F8F8;
+        }
     </style>
 </head>
 
 <body>
+
+<div class="list">
 <ul id="Menu">
     <li><a href="/"> home </a></li>
     <li><a href="/about"> about us </a></li>
@@ -47,6 +64,7 @@
 <br/><br/>
 
 @yield('content')
+</div>
 
 </body>
 </html>
