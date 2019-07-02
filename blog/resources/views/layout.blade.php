@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
 
-    <title>@yield('title', 'def title')</title>
+    <title>@yield('title', 'title by default')</title>
 
     <style type="text/css">
-        #Menu {
+        #menu {
             padding: 0;
             margin: 0;
             list-style-type: none;
@@ -16,23 +16,23 @@
             border-right: 1px solid #bbb;
         }
 
-        #Menu li {
+        #menu li {
             border-bottom: 1px solid #eeeeee;
             padding: 7px 10px 7px 10px;
             float: left;
         }
 
-        #Menu li:hover {
+        #menu li:hover {
             color: White;
             background-color: #ffcc00;
         }
 
-        #Menu a:link {
+        #menu a:link {
             color: #717171;
             text-decoration: none;
         }
 
-        #Menu a:hover {
+        #menu a:hover {
             color: White;
         }
 
@@ -56,7 +56,7 @@
 <body>
 
 <div class="list">
-<ul id="Menu">
+<ul id="menu">
     <li><a href="/"> home </a></li>
     <li><a href="/about"> about us </a></li>
     <li><a href="/contact"> contact </a></li>
