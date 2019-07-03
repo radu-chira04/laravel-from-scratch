@@ -54,7 +54,6 @@
 </head>
 
 <body>
-
 <div class="list">
 <ul id="menu">
     <li><a href="/"> home </a></li>
@@ -67,6 +66,5 @@
 
 @yield('content')
 </div>
-
 </body>
 </html>

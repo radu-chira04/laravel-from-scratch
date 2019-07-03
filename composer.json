@@ -1,5 +1,6 @@
 {
     "require": {
-        "laravel/installer": "^2.1"
+        "laravel/installer": "^2.1",
+        "twbs/bootstrap": "4.3.1"
     }
 }

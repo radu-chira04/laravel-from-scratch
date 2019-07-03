@@ -3,11 +3,12 @@
 @section('title', 'edit project')
 
 @section('content')
+    <div class="container">
     <h4>edit project</h4>
     <form method="post" action="/projects/{{ $project->id }}" style="margin-bottom: 3px;">
         {{ method_field('PATCH') }}
         {{ csrf_field() }}
-        <div>
+        <div class="form-group">
             <input type="text" name="title" value="{{ $project->title }}" placeholder="Project title"/>
         </div>
         <div>
@@ -25,6 +26,6 @@
             <button type="submit">delete project</button>
         </div>
     </form>
-
+    </div>
 
 @endsection
