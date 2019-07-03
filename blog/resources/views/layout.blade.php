@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
 
-    <title>@yield('title', 'title by default')</title>
+    <title> @yield('title', 'title by default') </title>
+
+    <link href="{{ asset('../css/app.css') }}" rel="stylesheet">
 
     <style type="text/css">
         #menu {
@@ -11,7 +13,6 @@
             margin: 0;
             list-style-type: none;
             font-size: 13px;
-            color: #717171;
             width: 100%;
             border-right: 1px solid #bbb;
         }
@@ -28,7 +29,7 @@
         }
 
         #menu a:link {
-            color: #717171;
+            color: inherit;
             text-decoration: none;
         }
 
@@ -37,34 +38,29 @@
         }
 
         .list {
-            background-color:#fff;
-            margin:20px auto;
-            width:100%;
-            max-width:500px;
-            padding:20px;
-            border-radius:2px;
-            box-shadow:3px 3px 0 rgba(0, 0, 0, .1);
-            box-sizing:border-box;
-        }
-
-        body {
-            background-color: #F8F8F8;
+            background-color: #fff;
+            margin: 20px auto;
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            border-radius: 2px;
+            box-shadow: 3px 3px 0 rgba(0, 0, 0, .1);
+            box-sizing: border-box;
         }
     </style>
 </head>
 
-<body>
+<body style="background-color: #F8F8F8;">
 <div class="list">
-<ul id="menu">
-    <li><a href="/"> home </a></li>
-    <li><a href="/about"> about us </a></li>
-    <li><a href="/contact"> contact </a></li>
-    <li><a href="/projects"> display projects </a></li>
-    <li><a href="/projects/create"> create new project </a></li>
-</ul>
-<br/><br/>
-
-@yield('content')
+    <ul id="menu">
+        <li><a href="/"> home </a></li>
+        <li><a href="/about"> about us </a></li>
+        <li><a href="/contact"> contact </a></li>
+        <li><a href="/projects"> display projects </a></li>
+        <li><a href="/projects/create"> create new project </a></li>
+    </ul>
+    <br/><br/>
+    @yield('content')
 </div>
 </body>
 </html>
