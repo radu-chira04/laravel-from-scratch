@@ -19,65 +19,41 @@ class ProjectsController extends Controller
         return view('projects.create');
     }
 
-    public function edit($id)
+    public function edit(Project $project)
     {
-        $project = Project::findOrFail($id);
-
         return view('projects.edit', compact('project'));
     }
 
     public function store()
     {
-        $project = new Project();
-        $project->title = \request('title');
-        $project->description = \request('description');
-        $project->save();
-
-        return redirect('/projects');
-    }
-
-    public function storeOtherVersion()
-    {
-        Project::create([
-            'title' => \request('title'),
-            'description' => \request('description')
+        \request()->validate([
+            'title' => ['required', 'min:3', 'max:255'],
+            'description' => ['required', 'min:3'],
         ]);
+        Project::create(\request(['title', 'description']));
 
         return redirect('/projects');
     }
 
-    public function update($id)
+    public function update(Project $project)
     {
-        $project = Project::findOrFail($id);
-        $project->title = \request('title');
-        $project->description = \request('description');
-        $project->save();
+        \request()->validate([
+            'title' => ['required', 'min:3'],
+            'description' => ['required', 'min:3'],
+        ]);
+        $project->update(\request(['title', 'description']));
 
         return redirect('/projects');
     }
 
-    public function destroy($id)
-    {
-        Project::find($id)->delete();
-
-        return redirect('/projects');
-    }
-
-    public function destroyOtherVersion(Project $project)
+    public function destroy(Project $project)
     {
         $project->delete();
 
         return redirect('/projects');
     }
 
-    public function show($id)
-    {
-        $project = Project::findOrFail($id);
-
-        return view('projects.show', compact('project'));
-    }
-
-    public function showOtherVersion(Project $project)
+    public function show(Project $project)
     {
         return view('projects.show', compact('project'));
     }
