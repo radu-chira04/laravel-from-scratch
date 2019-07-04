@@ -38,6 +38,6 @@ Route::get('/projects/{project}', 'ProjectsController@show');
 
 # project task controller
 Route::patch('/tasks/{task}', 'ProjectTasksController@update');
-
-
+Route::get('/tasks/create', 'ProjectTasksController@create');
+Route::post('/tasks', 'ProjectTasksController@store');
 

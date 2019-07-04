@@ -57,7 +57,8 @@
         <li><a href="/about"> about us </a></li>
         <li><a href="/contact"> contact </a></li>
         <li><a href="/projects"> display projects </a></li>
-        <li><a href="/projects/create"> create new project </a></li>
+        <li><a href="/projects/create"> new project </a></li>
+        <li><a href="/tasks/create"> new task </a></li>
     </ul>
     <br/><br/>
     @yield('content')

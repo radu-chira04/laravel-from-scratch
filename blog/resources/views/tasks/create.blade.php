@@ -1,21 +1,21 @@
 @extends('layout')
 
-@section('title', 'create project')
+@section('title', 'create task')
 
 @section('content')
     <div class="container">
-        <h4 class="title">create new project</h4>
+        <h4 class="title">create new task</h4>
 
-        <form method="post" action="/projects">
-            {{ csrf_field() }}
+        <form method="post" action="/tasks">
+            @csrf
             <div class="form-group">
-                <input class="form-control" type="text" name="title" value="{{ old('title') }}" placeholder="Project title"/>
+                <input class="form-control" type="text" name="project_id" value="{{ old('project_id') }}" placeholder="Project ID"/>
             </div>
             <div class="form-group">
-                <textarea class="form-control" name="description" placeholder="Project description">{{ old('description') }}</textarea>
+                <textarea class="form-control" name="description" placeholder="Task description">{{ old('description') }}</textarea>
             </div>
             <div>
-                <button class="btn btn-primary" type="submit">create project</button>
+                <button class="btn btn-primary" type="submit">create task</button>
             </div>
         </form>
 

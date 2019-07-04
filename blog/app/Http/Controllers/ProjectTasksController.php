@@ -15,4 +15,21 @@ class ProjectTasksController extends Controller
 
         return redirect('/projects');
     }
+
+    public function create()
+    {
+        return view('tasks.create');
+    }
+
+    public function store()
+    {
+        \request()->validate([
+            'project_id' => ['required'],
+            'description' => ['required', 'min:3', 'max:255'],
+        ]);
+        Task::create(\request(['project_id', 'description']));
+
+        return redirect('/projects');
+    }
+
 }
