@@ -36,6 +36,8 @@ Route::patch('/projects/{project}', 'ProjectsController@update');
 Route::delete('/projects/{project}', 'ProjectsController@destroy');
 Route::get('/projects/{project}', 'ProjectsController@show');
 
+# project task controller
+Route::patch('/tasks/{task}', 'ProjectTasksController@update');
 
 
 
