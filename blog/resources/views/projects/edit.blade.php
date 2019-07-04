@@ -7,8 +7,8 @@
     <div class="container">
         <h4 class="title">edit project</h4>
         <form method="post" action="/projects/{{ $project->id }}" style="margin-bottom: 5px;">
-            {{ method_field('PATCH') }}
-            {{ csrf_field() }}
+            @method('PATCH')
+            @csrf
             <div class="form-group">
                 <input class="form-control" type="text" name="title" value="{{ $project->title }}" placeholder="Project title"/>
             </div>

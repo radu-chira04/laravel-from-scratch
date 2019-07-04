@@ -7,7 +7,7 @@
         <h4 class="title">create new project</h4>
 
         <form method="post" action="/projects">
-            {{ csrf_field() }}
+            @csrf
             <div class="form-group">
                 <input class="form-control" type="text" name="title" value="{{ old('title') }}" placeholder="Project title"/>
             </div>
