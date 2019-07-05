@@ -22,22 +22,23 @@
  */
 
 
-# pages controller
+#### pages controller
 Route::get('/', 'PagesController@home');
 Route::get('/contact', 'PagesController@contact');
 Route::get('/about', 'PagesController@about');
 
-# projects controller
-Route::get('/projects', 'ProjectsController@index');
-Route::get('/projects/create', 'ProjectsController@create');
-Route::post('/projects', 'ProjectsController@store');
-Route::get('/projects/{project}/edit', 'ProjectsController@edit');
-Route::patch('/projects/{project}', 'ProjectsController@update');
-Route::delete('/projects/{project}', 'ProjectsController@destroy');
-Route::get('/projects/{project}', 'ProjectsController@show');
+#### projects controller
+//Route::get('/projects', 'ProjectsController@index');
+//Route::get('/projects/create', 'ProjectsController@create');
+//Route::post('/projects', 'ProjectsController@store');
+//Route::get('/projects/{project}/edit', 'ProjectsController@edit');
+//Route::patch('/projects/{project}', 'ProjectsController@update');
+//Route::delete('/projects/{project}', 'ProjectsController@destroy');
+//Route::get('/projects/{project}', 'ProjectsController@show');
+Route::resource('projects', 'ProjectsController');
 
-# project task controller
-Route::patch('/tasks/{task}', 'ProjectTasksController@update');
-Route::get('/tasks/create', 'ProjectTasksController@create');
-Route::post('/tasks', 'ProjectTasksController@store');
-
+#### project task controller
+//Route::patch('/tasks/{task}', 'ProjectTasksController@update');
+//Route::get('/tasks/create', 'ProjectTasksController@create');
+//Route::post('/tasks', 'ProjectTasksController@store');
+Route::resource('tasks', 'ProjectTasksController');
