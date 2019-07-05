@@ -19,11 +19,14 @@
                     <form method="post" action="/tasks/{{ $task->id }}">
                         @method('PATCH')
                         @csrf
+
                         <span class="badge badge-light">
-                            <label class="checkbox" for="completed_task_{{ $task->id }}">
+                            <label class="checkbox {{ $task->completed ? 'line-through' : '' }}"
+                                   for="completed_task_{{ $task->id }}"
+                                   {{ $task->completed ? '' : '' }}>
                                 <input id="completed_task_{{ $task->id }}"
                                        type="checkbox" name="completed"
-                                       onchange="this.form.submit()" {{ $task->completed ? 'checked' : '' }} >
+                                       onchange="this.form.submit()" {{ $task->completed ? 'checked' : '' }}>
                                 {{ $task->description }}
                             </label>
                         </span>

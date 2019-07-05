@@ -37,6 +37,10 @@
             color: White;
         }
 
+        .line-through{
+            text-decoration: line-through;
+        }
+
         .list {
             background-color: #fff;
             margin: 20px auto;
