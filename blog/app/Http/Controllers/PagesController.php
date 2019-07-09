@@ -6,6 +6,11 @@ use Illuminate\Http\Request;
 
 class PagesController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function home()
     {
         $tasks = [
@@ -18,7 +23,6 @@ class PagesController extends Controller
         //return view('welcome')->withTasks($tasks)->withUser('user');
         return view('welcome', ['tasks' => $tasks, 'user' => 'tstUser']);
     }
-
 
     public function about()
     {

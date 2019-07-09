@@ -8,6 +8,11 @@ use App\Project;
 
 class ProjectTasksController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function update(Task $task)
     {
         $method = request()->has('completed') ? 'complete' : 'incomplete';
