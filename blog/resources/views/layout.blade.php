@@ -5,8 +5,25 @@
 
     <title> @yield('title', 'title by default') </title>
 
-    <link href="{{ asset('../css/app.css') }}" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>{{ config('app.name', 'Laravel') }}</title>
+
+    <!-- Scripts -->
+    <script src="{{ asset('js/app.js') }}" defer></script>
+
+    <!-- Fonts -->
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+
+    <!-- Styles -->
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+
+    <!-- Styles custom -->
     <style type="text/css">
         #menu {
             padding: 0;
@@ -55,6 +72,9 @@
 </head>
 
 <body style="background-color: #F8F8F8;">
+
+@include('navbar')
+
 <div class="list">
     <ul id="menu">
         <li><a href="/"> home </a></li>
@@ -67,5 +87,6 @@
     <br/><br/>
     @yield('content')
 </div>
+
 </body>
 </html>
