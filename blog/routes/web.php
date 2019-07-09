@@ -21,6 +21,9 @@
     DELETE  /projects/$id       (destroy/delete)
  */
 
+//Route::get('/', function (){
+//   dd(new \App\Services\Twitter('api-key'));
+//});
 
 #### pages controller
 Route::get('/', 'PagesController@home');
