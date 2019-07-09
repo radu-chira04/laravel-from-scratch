@@ -45,3 +45,7 @@ Route::resource('projects', 'ProjectsController');
 //Route::get('/tasks/create', 'ProjectTasksController@create');
 //Route::post('/tasks', 'ProjectTasksController@store');
 Route::resource('tasks', 'ProjectTasksController');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
