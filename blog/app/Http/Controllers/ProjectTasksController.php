@@ -23,7 +23,9 @@ class ProjectTasksController extends Controller
 
     public function create()
     {
-        return view('tasks.create');
+        $projects = Project::where('owner_id', auth()->id())->get();
+
+        return view('tasks.create', ['projects' => $projects]);
     }
 
     public function store()

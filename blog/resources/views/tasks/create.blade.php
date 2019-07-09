@@ -9,7 +9,11 @@
         <form method="post" action="/tasks">
             @csrf
             <div class="form-group">
-                <input class="form-control" type="text" name="project_id" value="{{ old('project_id') }}" placeholder="Project ID"/>
+                <select class="form-control" name="project_id">
+                    @foreach($projects as $project)
+                        <option value="{{ $project->id }}">{{ $project->title }}</option>
+                    @endforeach
+                </select>
             </div>
             <div class="form-group">
                 <textarea class="form-control" name="description" placeholder="Task description">{{ old('description') }}</textarea>
