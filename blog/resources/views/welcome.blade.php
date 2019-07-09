@@ -3,7 +3,7 @@
 @section('title', 'laravel')
 
 @section('content')
-    <h4>welcome {{ $user }} !!!</h4>
+    <h4>welcome {{ auth()->user()->name }} !!!</h4>
 
     <ul>
         @foreach ($tasks as $task)
