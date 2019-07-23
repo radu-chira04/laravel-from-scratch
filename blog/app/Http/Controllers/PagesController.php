@@ -21,16 +21,16 @@ class PagesController extends Controller
         ];
 
         //return view('welcome')->withTasks($tasks)->withUser('user');
-        return view('welcome', ['tasks' => $tasks, 'user' => 'tstUser']);
+        return view('pages.welcome', ['tasks' => $tasks, 'user' => 'tstUser']);
     }
 
     public function about()
     {
-        return view('about');
+        return view('pages.about');
     }
 
     public function contact()
     {
-        return view('contact');
+        return view('pages.contact');
     }
 }
