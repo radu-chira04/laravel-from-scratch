@@ -10,9 +10,26 @@ require_once __DIR__ . '/../../../../vendor/autoload.php';
 class HomeController extends Controller
 {
     const USERNAME = 'username';
-    const PASSWORD = 'passsword';
+    const PASSWORD = 'password';
     const ENDOINT = 'shop/:shopId/offer/';
     const URL = 'https://import.idealo.com/';
+
+    private $testItemForIdealo = [
+        "sku" => "ABC13111",// ABC13111, ABC13222
+        "title" => "test title",
+        "price" => "13.80",
+        "url" => "http://www.idealo.de/",
+        "paymentCosts" => [
+            "PAYPAL" => "1.23",
+            "CREDIT_CARD" => "2.99",
+            "CASH_IN_ADVANCE" => "0.00",
+            "PAYPAL" => "1.23"
+        ],
+        "deliveryCosts" => [
+            "DHL" => "0.99"
+        ],
+    ];
+
 
     /**
      * Create a new controller instance.
@@ -69,51 +86,40 @@ class HomeController extends Controller
         $shopId = $this->getShopDetails()->shop_id;
         $token = $this->getShopDetails()->access_token;
 
-        $payload = [
-            "sku" => "ABC13111",// ABC13111, ABC13222
-            "title" => "test title",
-            "price" => "13.80",
-            "url" => "http://www.idealo.de/",
-            "paymentCosts" => [
-                "PAYPAL" => "1.23",
-                "CREDIT_CARD" => "2.99",
-                "CASH_IN_ADVANCE" => "0.00",
-                "PAYPAL" => "1.23"
-            ],
-            "deliveryCosts" => [
-                "DHL" => "0.99"
-            ],
-        ];
-
+        $payload = $this->testItemForIdealo;
         $url = self::URL . str_replace(':shopId', $shopId, self::ENDOINT) . $payload['sku'];
 
         // https://import.idealo.com/shop/309564/offer/abc3434
-//        return json_encode(['url' => $url, 'shop_id' => $shopId]);
+        // return json_encode(['url' => $url, 'shop_id' => $shopId]);
 
         $ch = curl_init($url);
 
         $header = array();
         $header[] = 'Authorization: Bearer ' . $token;
+        $method = 'GET';# values like GET, PUT, DELETE
 
-        #*** start for PUT => 204 No Content
-//        $contentJson = json_encode($payload);
-//        $header[] = 'Content-Type: application/json; charset=UTF-8';
-//        $header[] = 'Content-Length: ' . strlen($contentJson);
-//        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-//        curl_setopt($ch, CURLOPT_POSTFIELDS, $contentJson);
-        #*** end PUT
+        switch ($method) {
 
-        #*** start for GET => 405 Method Not Allowed
-        $header[] = 'Accept: application/json';
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload['sku']);
-        #*** end GET
+            case 'PUT':
+                $contentJson = json_encode($payload);
+                $header[] = 'Content-Type: application/json; charset=UTF-8';
+                $header[] = 'Content-Length: ' . strlen($contentJson);
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $contentJson);
+                break;
 
-        # start for DELETE request => 202 Accepted
-//        $header[] = 'Accept: application/json';
-//        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
-//        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload['sku']);
-        # end DELETE
+            case 'GET':
+                $header[] = 'Accept: application/json';
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $payload['sku']);
+                break;
+
+            case 'DELETE':
+                $header[] = 'Accept: application/json';
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $payload['sku']);
+                break;
+        }
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
