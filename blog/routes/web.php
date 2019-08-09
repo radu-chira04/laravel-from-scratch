@@ -49,4 +49,4 @@ Route::resource('tasks', 'ProjectTasksController');
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-Route::get('testApiCall', 'HomeController@testIdealoApi');# testWithGuzzle ... testIdealoApi
+Route::get('/testApiCall', 'HomeController@testIdealoApi');# testWithGuzzle ... testIdealoApi
