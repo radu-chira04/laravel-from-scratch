@@ -30,7 +30,6 @@ class HomeController extends Controller
         ],
     ];
 
-
     /**
      * Create a new controller instance.
      *
@@ -64,7 +63,7 @@ class HomeController extends Controller
         return view('home');
     }
 
-    public function getShopDetails()
+    public function getIdealoLoginDetails()
     {
         $url = 'https://api.idealo.com/mer/businessaccount/api/v1/oauth/token';
 
@@ -83,8 +82,8 @@ class HomeController extends Controller
 
     public function testIdealoApi()
     {
-        $shopId = $this->getShopDetails()->shop_id;
-        $token = $this->getShopDetails()->access_token;
+        $shopId = $this->getIdealoLoginDetails()->shop_id;
+        $token = $this->getIdealoLoginDetails()->access_token;
 
         $payload = $this->testItemForIdealo;
         $url = self::URL . str_replace(':shopId', $shopId, self::ENDOINT) . $payload['sku'];
@@ -126,16 +125,19 @@ class HomeController extends Controller
 
         $response = curl_exec($ch);
 
-        $line = 0;
+        $return = [];
         $response = (array)json_decode($response);
         if(isset($response['fieldErrors']) || isset($response['generalErrors']) || isset($response['error'])) {
-            $line = __LINE__;
+            $return['line'] = 'error on line: ' . __LINE__;
         }
 
         $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        return json_encode(['response' => $response, 'status_code' => $statusCode, 'line' => $line]);
+        $return['response'] = $response;
+        $return['status_code'] = $statusCode;
+
+        return json_encode($return);
     }
 
 
