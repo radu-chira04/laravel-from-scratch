@@ -126,6 +126,7 @@ class HomeController extends Controller
         $response = curl_exec($ch);
 
         $return = [];
+        $return['method'] = $method;
         $response = (array)json_decode($response);
         if(isset($response['fieldErrors']) || isset($response['generalErrors']) || isset($response['error'])) {
             $return['line'] = 'error on line: ' . __LINE__;
