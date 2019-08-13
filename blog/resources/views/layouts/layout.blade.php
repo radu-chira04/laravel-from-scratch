@@ -20,6 +20,7 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link rel="shortcut icon" href="https://laravel.com/favicon.png">
 
     <!-- Styles custom -->
     <style type="text/css">
