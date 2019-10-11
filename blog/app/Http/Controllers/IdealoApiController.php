@@ -11,8 +11,11 @@ class IdealoApiController extends Controller
     const ENDOINT = 'shop/:shopId/offer/';
     const URL = 'https://import.idealo.com/';
 
+    const QUEUE_LIMIT = 5;
+    private $urlQueue = [];
+
     private $testItemForIdealo = [
-        "sku" => "ABC13111",// ABC13111, ABC13222
+        "sku" => "ABC13111",
         "title" => "test title",
         "price" => "13.80",
         "url" => "http://www.idealo.de/",
@@ -25,6 +28,12 @@ class IdealoApiController extends Controller
         "deliveryCosts" => [
             "DHL" => "0.99"
         ],
+    ];
+
+    private $testSKUs = [
+        'ABC13111', 'ABC13222', 'ABC13112', 'ABC13112', 'ABC13212',
+        'ABC13122', 'ABC13123', 'ABC13114', 'ABC13115', 'ABC13116',
+        'ABC13117', 'ABC13118', 'ABC13119', 'ABC13120'
     ];
 
     public function getLoginDetails()
@@ -54,6 +63,7 @@ class IdealoApiController extends Controller
 
         // https://import.idealo.com/shop/309564/offer/abc3434
         // return json_encode(['url' => $url, 'shop_id' => $shopId]);
+        // echo $url;die("<br/>end at line " . __LINE__ . "<br/>");
 
         $ch = curl_init($url);
 
@@ -105,4 +115,109 @@ class IdealoApiController extends Controller
         return json_encode($return);
     }
 
+    public function multiCurlCall()
+    {
+        $this->testAddToQueue();
+        die("<br/>end at line " . __LINE__ . "<br/>");
+
+        $urls = [];
+        $urls['ABC13111'] = "https://import.idealo.com/shop/309564/offer/ABC13111";
+        $urls['ABC13222'] = "https://import.idealo.com/shop/309564/offer/ABC13222";
+        $urls['ABC13112'] = "https://import.idealo.com/shop/309564/offer/ABC13112";
+
+        $this->printArray($urls, __LINE__);
+
+        $this->multiCurlRequests($urls);
+        die("<br/>end at line " . __LINE__ . "<br/>");
+    }
+
+    private function addToQueue($queue, $key, $value)
+    {
+        $this->$queue[$key] = $value;
+        $limit = self::QUEUE_LIMIT + 1;
+        if (count($this->$queue) >= $limit) {
+            $this->$queue = [];
+        }
+    }
+
+    private function testAddToQueue()
+    {
+        $items = $this->testSKUs;
+        $shopId = $this->getLoginDetails()->shop_id;
+        echo "count items: " . count($items) . "<br/>";
+        for($i = 0; $i <= count($items); $i++){
+            if(isset($items[$i])){
+                $url = self::URL . str_replace(':shopId', $shopId, self::ENDOINT) . $items[$i];
+                $this->addToQueue('urlQueue', $i, $url);
+                if(count($this->urlQueue) == self::QUEUE_LIMIT){
+                    // process urls
+                    $this->printArray($this->urlQueue, __LINE__);
+                    $this->urlQueue = [];
+                }
+            }
+        }
+
+        if(count($this->urlQueue)){
+            // proccess remained urls
+            $this->printArray($this->urlQueue, __LINE__);
+        }
+    }
+
+    public function multiCurlRequests($urls)
+    {
+        $header = array();
+        $header[] = 'Authorization: Bearer ' . $this->getLoginDetails()->access_token;
+        $method = 'GET';# GET, PUT, DELETE
+
+        $i = 0;
+        $chArr = [];
+        $mh = curl_multi_init();
+        foreach ($urls as $sku => $url) {
+            $chArr[$i] = curl_init($url);
+            switch ($method) {
+                case 'GET':
+                    $header[] = 'Accept: application/json';
+                    curl_setopt($chArr[$i], CURLOPT_CUSTOMREQUEST, 'GET');
+                    curl_setopt($chArr[$i], CURLOPT_POSTFIELDS, $sku);
+                    break;
+
+                case 'DELETE':
+                    $header[] = 'Accept: application/json';
+                    curl_setopt($chArr[$i], CURLOPT_CUSTOMREQUEST, 'DELETE');
+                    curl_setopt($chArr[$i], CURLOPT_POSTFIELDS, $sku);
+                    break;
+            }
+
+            curl_setopt($chArr[$i], CURLOPT_HTTPHEADER, $header);
+            curl_setopt($chArr[$i], CURLOPT_RETURNTRANSFER, true);
+
+            curl_multi_add_handle($mh, $chArr[$i]);
+            $i++;
+        }
+
+        $running = null;
+        do {
+            curl_multi_exec($mh, $running);
+        } while ($running > 0);
+
+        foreach ($chArr as $k => $ch) {
+            $result = curl_multi_getcontent($ch);
+            echo "<br/>" . $result . "<br/><br/>";
+//            $result = curl_exec($ch);
+//            $this->printArray($result, __LINE__);
+            curl_multi_remove_handle($mh, $ch);
+        }
+
+        curl_multi_close($mh);
+    }
+
+    private function printArray($array, $line)
+    {
+        echo "<br/>";
+        echo "line: " . $line;
+        echo "<pre>";
+        print_r($array);
+        echo "</pre>";
+        echo "<br/>";
+    }
 }
