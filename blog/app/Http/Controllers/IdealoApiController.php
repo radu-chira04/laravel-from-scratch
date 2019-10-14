@@ -12,7 +12,7 @@ class IdealoApiController extends Controller
     const URL = 'https://import.idealo.com/';
 
     private $curlHandles = [];
-    private $multiCurlHandle = null;
+    private $curlMultiHandle = null;
 
     const QUEUE_LIMIT = 5;
     private $urlQueue = [];
@@ -36,7 +36,7 @@ class IdealoApiController extends Controller
     private $testSKUs = [
         'ABC13111', 'ABC13222', 'ABC13112', 'ABC13112', 'ABC13212',
         'ABC13122', 'ABC13123', 'ABC13114', 'ABC13115', 'ABC13116',
-        'ABC13117', 'ABC13118', 'ABC13119', 'ABC13120'
+        'ABC13117', 'ABC13118', 'ABC13119', 'ABC13120',
     ];
 
     public function getLoginDetails()
@@ -120,8 +120,8 @@ class IdealoApiController extends Controller
 
     public function multiCurlCall()
     {
-//        $this->testAddToQueue();
-//        die("<br/>end at line " . __LINE__ . "<br/>");
+        $this->testAddToQueue();
+        die("<br/>end at line " . __LINE__ . "<br/>");
 
         $urls = [];
         $urls['ABC13111'] = "https://import.idealo.com/shop/309564/offer/ABC13111";
@@ -136,15 +136,6 @@ class IdealoApiController extends Controller
         die("<br/>end at line " . __LINE__ . "<br/>");
     }
 
-    private function addToQueue($queue, $key, $value)
-    {
-        $this->$queue[$key] = $value;
-        $limit = self::QUEUE_LIMIT + 1;
-        if (count($this->$queue) >= $limit) {
-            $this->$queue = [];
-        }
-    }
-
     private function testAddToQueue()
     {
         $items = $this->testSKUs;
@@ -153,7 +144,7 @@ class IdealoApiController extends Controller
         for($i = 0; $i <= count($items); $i++){
             if(isset($items[$i])){
                 $url = self::URL . str_replace(':shopId', $shopId, self::ENDOINT) . $items[$i];
-                $this->addToQueue('urlQueue', $i, $url);
+                $this->urlQueue[$i] = $url;
                 if(count($this->urlQueue) == self::QUEUE_LIMIT){
                     // process urls
                     $this->printArray($this->urlQueue, __LINE__);
@@ -174,8 +165,8 @@ class IdealoApiController extends Controller
         $header = array();
         $header[] = 'Authorization: Bearer ' . $this->getLoginDetails()->access_token;
         $method = 'GET';# GET, PUT, DELETE
-        if (empty($this->multiCurlHandle)) {
-            $this->multiCurlHandle = curl_multi_init();
+        if (empty($this->curlMultiHandle)) {
+            $this->curlMultiHandle = curl_multi_init();
         }
 
         foreach ($urls as $sku => $url) {
@@ -196,13 +187,13 @@ class IdealoApiController extends Controller
 
             curl_setopt($this->curlHandles[$i], CURLOPT_HTTPHEADER, $header);
             curl_setopt($this->curlHandles[$i], CURLOPT_RETURNTRANSFER, true);
-            curl_multi_add_handle($this->multiCurlHandle, $this->curlHandles[$i]);
+            curl_multi_add_handle($this->curlMultiHandle, $this->curlHandles[$i]);
             $i++;
         }
 
         $running = null;
         do {
-            curl_multi_exec($this->multiCurlHandle, $running);
+            curl_multi_exec($this->curlMultiHandle, $running);
         } while ($running > 0);
 
         $result = [];
@@ -217,10 +208,10 @@ class IdealoApiController extends Controller
         if (is_array($this->curlHandles) && !empty($this->curlHandles)) {
             try {
                 foreach ($this->curlHandles as $ch) {
-                    curl_multi_remove_handle($this->multiCurlHandle, $ch);
+                    curl_multi_remove_handle($this->curlMultiHandle, $ch);
                     curl_close($ch);
                 }
-                curl_multi_close($this->multiCurlHandle);
+                curl_multi_close($this->curlMultiHandle);
             } catch (\Throwable $throwable) {
                 echo $throwable->getMessage() . "<br/>";
                 die("<br/>end at line " . __LINE__ . "<br/>");
