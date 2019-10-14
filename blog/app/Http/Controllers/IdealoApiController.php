@@ -11,6 +11,9 @@ class IdealoApiController extends Controller
     const ENDOINT = 'shop/:shopId/offer/';
     const URL = 'https://import.idealo.com/';
 
+    private $curlHandles = [];
+    private $multiCurlHandle = null;
+
     const QUEUE_LIMIT = 5;
     private $urlQueue = [];
 
@@ -117,8 +120,8 @@ class IdealoApiController extends Controller
 
     public function multiCurlCall()
     {
-        $this->testAddToQueue();
-        die("<br/>end at line " . __LINE__ . "<br/>");
+//        $this->testAddToQueue();
+//        die("<br/>end at line " . __LINE__ . "<br/>");
 
         $urls = [];
         $urls['ABC13111'] = "https://import.idealo.com/shop/309564/offer/ABC13111";
@@ -127,7 +130,9 @@ class IdealoApiController extends Controller
 
         $this->printArray($urls, __LINE__);
 
-        $this->multiCurlRequests($urls);
+        $result = $this->multiCurlRequests($urls);
+        $this->printArray($result, __LINE__);
+        $this->closeCurlConnection();
         die("<br/>end at line " . __LINE__ . "<br/>");
     }
 
@@ -165,50 +170,62 @@ class IdealoApiController extends Controller
 
     public function multiCurlRequests($urls)
     {
+        $i = 0;
         $header = array();
         $header[] = 'Authorization: Bearer ' . $this->getLoginDetails()->access_token;
         $method = 'GET';# GET, PUT, DELETE
+        if (empty($this->multiCurlHandle)) {
+            $this->multiCurlHandle = curl_multi_init();
+        }
 
-        $i = 0;
-        $chArr = [];
-        $mh = curl_multi_init();
         foreach ($urls as $sku => $url) {
-            $chArr[$i] = curl_init($url);
+            $this->curlHandles[$i] = curl_init($url);
             switch ($method) {
                 case 'GET':
                     $header[] = 'Accept: application/json';
-                    curl_setopt($chArr[$i], CURLOPT_CUSTOMREQUEST, 'GET');
-                    curl_setopt($chArr[$i], CURLOPT_POSTFIELDS, $sku);
+                    curl_setopt($this->curlHandles[$i], CURLOPT_CUSTOMREQUEST, 'GET');
+                    curl_setopt($this->curlHandles[$i], CURLOPT_POSTFIELDS, $sku);
                     break;
 
                 case 'DELETE':
                     $header[] = 'Accept: application/json';
-                    curl_setopt($chArr[$i], CURLOPT_CUSTOMREQUEST, 'DELETE');
-                    curl_setopt($chArr[$i], CURLOPT_POSTFIELDS, $sku);
+                    curl_setopt($this->curlHandles[$i], CURLOPT_CUSTOMREQUEST, 'DELETE');
+                    curl_setopt($this->curlHandles[$i], CURLOPT_POSTFIELDS, $sku);
                     break;
             }
 
-            curl_setopt($chArr[$i], CURLOPT_HTTPHEADER, $header);
-            curl_setopt($chArr[$i], CURLOPT_RETURNTRANSFER, true);
-
-            curl_multi_add_handle($mh, $chArr[$i]);
+            curl_setopt($this->curlHandles[$i], CURLOPT_HTTPHEADER, $header);
+            curl_setopt($this->curlHandles[$i], CURLOPT_RETURNTRANSFER, true);
+            curl_multi_add_handle($this->multiCurlHandle, $this->curlHandles[$i]);
             $i++;
         }
 
         $running = null;
         do {
-            curl_multi_exec($mh, $running);
+            curl_multi_exec($this->multiCurlHandle, $running);
         } while ($running > 0);
 
-        foreach ($chArr as $k => $ch) {
-            $result = curl_multi_getcontent($ch);
-            echo "<br/>" . $result . "<br/><br/>";
-//            $result = curl_exec($ch);
-//            $this->printArray($result, __LINE__);
-            curl_multi_remove_handle($mh, $ch);
+        $result = [];
+        foreach ($this->curlHandles as $k => $ch) {
+            $result[$k] = curl_multi_getcontent($ch);
         }
+        return $result;
+    }
 
-        curl_multi_close($mh);
+    private function closeCurlConnection()
+    {
+        if (is_array($this->curlHandles) && !empty($this->curlHandles)) {
+            try {
+                foreach ($this->curlHandles as $ch) {
+                    curl_multi_remove_handle($this->multiCurlHandle, $ch);
+                    curl_close($ch);
+                }
+                curl_multi_close($this->multiCurlHandle);
+            } catch (\Throwable $throwable) {
+                echo $throwable->getMessage() . "<br/>";
+                die("<br/>end at line " . __LINE__ . "<br/>");
+            }
+        }
     }
 
     private function printArray($array, $line)

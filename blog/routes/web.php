@@ -51,5 +51,5 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/guzzleTest', 'HomeController@testWithGuzzle')->name('guzzleTest');
 
-Route::get('/testIdealoApi', 'IdealoApiController@justCall');
+Route::get('/testIdealoApi', 'IdealoApiController@multiCurlCall');
 Route::get('/testAmazonApi', 'AmazonApiController@justCall');
