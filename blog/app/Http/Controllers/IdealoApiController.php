@@ -18,18 +18,18 @@ class IdealoApiController extends Controller
     private $urlQueue = [];
 
     private $testItemForIdealo = [
-        "sku" => "ABC13111",
+        "sku" => "ABC13112",
         "title" => "test title",
-        "price" => "13.80",
+        "price" => "18.80",
         "url" => "http://www.idealo.de/",
         "paymentCosts" => [
-            "PAYPAL" => "1.23",
-            "CREDIT_CARD" => "2.99",
+            "PAYPAL" => "1.25",
+            "CREDIT_CARD" => "3.00",
             "CASH_IN_ADVANCE" => "0.00",
-            "PAYPAL" => "1.23"
+            "PAYPAL" => "1.25"
         ],
         "deliveryCosts" => [
-            "DHL" => "0.99"
+            "DHL" => "1.00"
         ],
     ];
 
@@ -64,16 +64,13 @@ class IdealoApiController extends Controller
         $payload = $this->testItemForIdealo;
         $url = self::URL . str_replace(':shopId', $shopId, self::ENDOINT) . $payload['sku'];
 
-        // https://import.idealo.com/shop/309564/offer/abc3434
-        // return json_encode(['url' => $url, 'shop_id' => $shopId]);
-        // echo $url;die("<br/>end at line " . __LINE__ . "<br/>");
-
-        $ch = curl_init($url);
+        $this->printArray($payload, __LINE__);
 
         $header = array();
         $header[] = 'Authorization: Bearer ' . $token;
-        $method = 'GET';# values like GET, PUT, DELETE
+        $method = 'PUT';# values like GET, PUT, DELETE
 
+        $ch = curl_init($url);
         switch ($method) {
 
             case 'PUT':
@@ -172,6 +169,7 @@ class IdealoApiController extends Controller
         foreach ($urls as $sku => $url) {
             $this->curlHandles[$i] = curl_init($url);
             switch ($method) {
+
                 case 'GET':
                     $header[] = 'Accept: application/json';
                     curl_setopt($this->curlHandles[$i], CURLOPT_CUSTOMREQUEST, 'GET');
