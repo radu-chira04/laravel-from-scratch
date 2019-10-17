@@ -167,7 +167,10 @@ class IdealoApiController extends Controller
         }
 
         foreach ($urls as $sku => $url) {
-            $this->curlHandles[$i] = curl_init($url);
+            if (empty($this->curlHandles[$i])) {
+                $this->curlHandles[$i] = curl_init($url);
+            }
+            curl_setopt($this->curlHandles[$i], CURLOPT_URL, $url);
             switch ($method) {
 
                 case 'GET':
@@ -197,6 +200,7 @@ class IdealoApiController extends Controller
         $result = [];
         foreach ($this->curlHandles as $k => $ch) {
             $result[$k] = curl_multi_getcontent($ch);
+            curl_multi_remove_handle($this->curlMultiHandle, $ch);
         }
         return $result;
     }
@@ -206,7 +210,6 @@ class IdealoApiController extends Controller
         if (is_array($this->curlHandles) && !empty($this->curlHandles)) {
             try {
                 foreach ($this->curlHandles as $ch) {
-                    curl_multi_remove_handle($this->curlMultiHandle, $ch);
                     curl_close($ch);
                 }
                 curl_multi_close($this->curlMultiHandle);
