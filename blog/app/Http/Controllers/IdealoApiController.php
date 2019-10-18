@@ -68,7 +68,7 @@ class IdealoApiController extends Controller
 
         $header = array();
         $header[] = 'Authorization: Bearer ' . $token;
-        $method = 'PUT';# values like GET, PUT, DELETE
+        $method = 'GET';# values like GET, PUT, DELETE
 
         $ch = curl_init($url);
         switch ($method) {
@@ -128,7 +128,9 @@ class IdealoApiController extends Controller
         $this->printArray($urls, __LINE__);
 
         $result = $this->multiCurlRequests($urls);
+
         $this->printArray($result, __LINE__);
+
         $this->closeCurlConnection();
         die("<br/>end at line " . __LINE__ . "<br/>");
     }
@@ -138,11 +140,11 @@ class IdealoApiController extends Controller
         $items = $this->testSKUs;
         $shopId = $this->getLoginDetails()->shop_id;
         echo "count items: " . count($items) . "<br/>";
-        for($i = 0; $i <= count($items); $i++){
-            if(isset($items[$i])){
+        for ($i = 0; $i <= count($items); $i++) {
+            if (isset($items[$i])) {
                 $url = self::URL . str_replace(':shopId', $shopId, self::ENDOINT) . $items[$i];
                 $this->urlQueue[$i] = $url;
-                if(count($this->urlQueue) == self::QUEUE_LIMIT){
+                if (count($this->urlQueue) == self::QUEUE_LIMIT) {
                     // process urls
                     $this->printArray($this->urlQueue, __LINE__);
                     $this->urlQueue = [];
@@ -150,7 +152,7 @@ class IdealoApiController extends Controller
             }
         }
 
-        if(count($this->urlQueue)){
+        if (count($this->urlQueue)) {
             // proccess remained urls
             $this->printArray($this->urlQueue, __LINE__);
         }
@@ -200,6 +202,9 @@ class IdealoApiController extends Controller
         $result = [];
         foreach ($this->curlHandles as $k => $ch) {
             $result[$k] = curl_multi_getcontent($ch);
+            if (json_decode($result[$k])) {
+                $result[$k] = (array)json_decode($result[$k]);
+            }
             curl_multi_remove_handle($this->curlMultiHandle, $ch);
         }
         return $result;
