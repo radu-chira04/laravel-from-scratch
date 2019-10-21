@@ -202,9 +202,6 @@ class IdealoApiController extends Controller
         $result = [];
         foreach ($this->curlHandles as $k => $ch) {
             $result[$k] = curl_multi_getcontent($ch);
-            if (json_decode($result[$k])) {
-                $result[$k] = (array)json_decode($result[$k]);
-            }
             curl_multi_remove_handle($this->curlMultiHandle, $ch);
         }
         return $result;
