@@ -11,6 +11,10 @@ class IdealoApiController extends Controller
     const ENDOINT = 'shop/:shopId/offer/';
     const URL = 'https://import.idealo.com/';
 
+    const GET = 'GET';
+    const PUT = 'PUT';
+    const DELETE = 'DELETE';
+
     private $curlHandles = [];
     private $curlMultiHandle = null;
 
@@ -56,40 +60,39 @@ class IdealoApiController extends Controller
         return json_decode($response);
     }
 
-    public function justCall()
+    public function simpleCurlCall($method, $payload)
     {
         $shopId = $this->getLoginDetails()->shop_id;
         $token = $this->getLoginDetails()->access_token;
 
-        $payload = $this->testItemForIdealo;
         $url = self::URL . str_replace(':shopId', $shopId, self::ENDOINT) . $payload['sku'];
 
-        $this->printArray($payload, __LINE__);
+        //$this->printArray($payload, __LINE__);
 
         $header = array();
         $header[] = 'Authorization: Bearer ' . $token;
-        $method = 'GET';# values like GET, PUT, DELETE
+        //$method = 'GET';# values like GET, PUT, DELETE
 
         $ch = curl_init($url);
         switch ($method) {
 
-            case 'PUT':
+            case self::PUT:
                 $contentJson = json_encode($payload);
                 $header[] = 'Content-Type: application/json; charset=UTF-8';
                 $header[] = 'Content-Length: ' . strlen($contentJson);
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, self::PUT);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $contentJson);
                 break;
 
-            case 'GET':
+            case self::GET:
                 $header[] = 'Accept: application/json';
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, self::GET);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $payload['sku']);
                 break;
 
-            case 'DELETE':
+            case self::DELETE:
                 $header[] = 'Accept: application/json';
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, self::DELETE);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $payload['sku']);
                 break;
         }
@@ -115,15 +118,38 @@ class IdealoApiController extends Controller
         return json_encode($return);
     }
 
+    public function get()
+    {
+        return $this->simpleCurlCall(self::GET, $this->testItemForIdealo);
+    }
+
+    public function put()
+    {
+        return $this->simpleCurlCall(self::PUT, $this->testItemForIdealo);
+    }
+
+    public function delete()
+    {
+        return $this->simpleCurlCall(self::DELETE, $this->testItemForIdealo);
+    }
+
     public function multiCurlCall()
     {
-        $this->testAddToQueue();
-        die("<br/>end at line " . __LINE__ . "<br/>");
+        //$this->testAddToQueue();
+        //die("<br/>end at line " . __LINE__ . "<br/>");
 
         $urls = [];
-        $urls['ABC13111'] = "https://import.idealo.com/shop/309564/offer/ABC13111";
-        $urls['ABC13222'] = "https://import.idealo.com/shop/309564/offer/ABC13222";
-        $urls['ABC13112'] = "https://import.idealo.com/shop/309564/offer/ABC13112";
+        $urls['ABC13212'] = "https://import.idealo.com/shop/309564/offer/ABC13212";
+        $urls['ABC13113'] = "https://import.idealo.com/shop/309564/offer/ABC13113";
+        $urls['ABC13114'] = "https://import.idealo.com/shop/309564/offer/ABC13114";
+        $urls['ABC13116'] = "https://import.idealo.com/shop/309564/offer/ABC13116";
+        $urls['ABC13117'] = "https://import.idealo.com/shop/309564/offer/ABC13117";
+        $urls['ABC13118'] = "https://import.idealo.com/shop/309564/offer/ABC13118";
+        $urls['ABC13119'] = "https://import.idealo.com/shop/309564/offer/ABC13119";
+        $urls['ABC13201'] = "https://import.idealo.com/shop/309564/offer/ABC13201";
+        $urls['ABC13202'] = "https://import.idealo.com/shop/309564/offer/ABC13202";
+        $urls['ABC13206'] = "https://import.idealo.com/shop/309564/offer/ABC13206";
+        $urls['ABC13216'] = "https://import.idealo.com/shop/309564/offer/ABC13215";
 
         $this->printArray($urls, __LINE__);
 
@@ -161,29 +187,29 @@ class IdealoApiController extends Controller
     public function multiCurlRequests($urls)
     {
         $i = 0;
-        $header = array();
-        $header[] = 'Authorization: Bearer ' . $this->getLoginDetails()->access_token;
-        $method = 'GET';# GET, PUT, DELETE
+        $method = self::GET; # GET, PUT, DELETE
         if (empty($this->curlMultiHandle)) {
             $this->curlMultiHandle = curl_multi_init();
         }
 
+        $header = array();
+        $header[] = 'Authorization: Bearer ' . $this->getLoginDetails()->access_token;
         foreach ($urls as $sku => $url) {
             if (empty($this->curlHandles[$i])) {
                 $this->curlHandles[$i] = curl_init($url);
             }
             curl_setopt($this->curlHandles[$i], CURLOPT_URL, $url);
-            switch ($method) {
 
-                case 'GET':
+            switch ($method) {
+                case self::GET:
                     $header[] = 'Accept: application/json';
-                    curl_setopt($this->curlHandles[$i], CURLOPT_CUSTOMREQUEST, 'GET');
+                    curl_setopt($this->curlHandles[$i], CURLOPT_CUSTOMREQUEST, self::GET);
                     curl_setopt($this->curlHandles[$i], CURLOPT_POSTFIELDS, $sku);
                     break;
 
-                case 'DELETE':
+                case self::DELETE:
                     $header[] = 'Accept: application/json';
-                    curl_setopt($this->curlHandles[$i], CURLOPT_CUSTOMREQUEST, 'DELETE');
+                    curl_setopt($this->curlHandles[$i], CURLOPT_CUSTOMREQUEST, self::DELETE);
                     curl_setopt($this->curlHandles[$i], CURLOPT_POSTFIELDS, $sku);
                     break;
             }
@@ -204,6 +230,7 @@ class IdealoApiController extends Controller
             $result[$k] = curl_multi_getcontent($ch);
             curl_multi_remove_handle($this->curlMultiHandle, $ch);
         }
+
         return $result;
     }
 
