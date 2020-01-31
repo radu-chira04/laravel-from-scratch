@@ -12,11 +12,20 @@ class JsonFileController extends Controller
     const DE_FLAT_FILE = 'Flat.File.HomeImprovement.de.xlsm';
     const FR_FLAT_FILE = 'Flat.File.HomeImprovement.fr.xlsm';
 
+    /**
+     * @param string $method
+     * @param int $line
+     */
     private function debugMessage($method, $line)
     {
         echo self::NEW_LINE . $method . "  line:" . $line . self::NEW_LINE . self::NEW_LINE;
     }
 
+    /**
+     * @param mixed $variable
+     * @param string $method
+     * @param int $line
+     */
     private function printVariable($variable, $method, $line)
     {
         $this->debugMessage($method, $line);
@@ -30,6 +39,10 @@ class JsonFileController extends Controller
         echo self::NEW_LINE . self::NEW_LINE;
     }
 
+    /**
+     * @param string $path
+     * @return string
+     */
     private function createTempFile($path)
     {
         $fileName = pathinfo($path, PATHINFO_BASENAME);
@@ -39,6 +52,10 @@ class JsonFileController extends Controller
         return $tmpPath;
     }
 
+    /**
+     * @param string $fileName
+     * @return string
+     */
     private function getLanguage($fileName)
     {
         if (preg_match("/uk/is", $fileName)) {
@@ -52,6 +69,10 @@ class JsonFileController extends Controller
         return $language;
     }
 
+    /**
+     * @param array $worksheetContent
+     * @return array
+     */
     private function getPredefinedFieldsValuesData($worksheetContent)
     {
         $predefinedValuesForFields = [];
@@ -71,6 +92,10 @@ class JsonFileController extends Controller
         return $predefinedValuesForFields;
     }
 
+    /**
+     * @param array $worksheetContent
+     * @return array
+     */
     private function getTheFieldsWithPredefinedValuesUp50($worksheetContent)
     {
         $fieldsWithPredefinedValuesMore50 = [];
@@ -86,6 +111,13 @@ class JsonFileController extends Controller
         return $fieldsWithPredefinedValuesMore50;
     }
 
+    /**
+     * @param array $worksheetValue
+     * @param string $dataProvider
+     * @param string $language
+     * @param array $predefinedValuesForFields
+     * @return array
+     */
     private function rowGeneratorFieldsWithPredefinedValues($worksheetValue, $dataProvider, $language, $predefinedValuesForFields)
     {
         $row['identifier'] = $worksheetValue[1];
@@ -119,6 +151,11 @@ class JsonFileController extends Controller
         return $row;
     }
 
+    /**
+     * @param array $worksheetValue
+     * @param string $language
+     * @return array
+     */
     private function rowGeneratorFieldsWithoutPredefinedValues($worksheetValue, $language)
     {
         $row['key'] = $worksheetValue[1];
@@ -137,6 +174,11 @@ class JsonFileController extends Controller
         return $row;
     }
 
+    /**
+     * @param array $worksheetValue
+     * @param string $language
+     * @return bool
+     */
     private function getRequiredValue($worksheetValue, $language)
     {
         if ($language != 'en' && isset($worksheetValue[14])) {
