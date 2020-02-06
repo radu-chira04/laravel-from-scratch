@@ -8,9 +8,6 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 class JsonFileController extends Controller
 {
     const NEW_LINE = '<br/>';
-    const UK_FLAT_FILE = 'Flat.File.HomeImprovement.uk.xlsm';
-    const DE_FLAT_FILE = 'Flat.File.HomeImprovement.de.xlsm';
-    const FR_FLAT_FILE = 'Flat.File.HomeImprovement.fr.xlsm';
 
     /**
      * @var string
