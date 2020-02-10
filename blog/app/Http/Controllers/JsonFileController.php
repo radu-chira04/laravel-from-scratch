@@ -191,27 +191,47 @@ class JsonFileController extends Controller
 
     private function rowGeneratorFieldsWithoutPredefinedValues($worksheetValue, $language)
     {
-        $row['key'] = $worksheetValue[1];
-        $required = $this->getRequiredValue($worksheetValue);
-        $row['required'] = $required;
-        $row['label'][$language] = $worksheetValue[2];
-        if (isset($worksheetValue[10])) {
-            $row['label']['en'] = $worksheetValue[10];
+        $startWith = 0;
+        $endWith = 1;
+        $multipleValuesFields = false;
+        preg_match('/(\w+)\d/', $worksheetValue[1], $match);
+        preg_match_all('/\d+\.*\d*/', $worksheetValue[1], $matches);
+        if (isset($matches[0]) && !empty($matches[0][0]) && !empty($matches[0][1])) {
+            $multipleValuesFields = true;
+            $startWith = trim($matches[0][0]);
+            $endWith = trim($matches[0][1]);
         }
-        $row['_meta']['definition'][$language] = $worksheetValue[3];
-        if (isset($worksheetValue[11])) {
-            $row['_meta']['definition']['en'] = $worksheetValue[11];
-        }
-        $row['_meta']['isRecommended'] = false; # todo
 
-        return $row;
+        $rows = [];
+        for ($i = $startWith; $i < $endWith; $i++) {
+            if($multipleValuesFields){
+                $row['key'] = trim($match[1]) . $i;
+            } else {
+                $row['key'] = $worksheetValue[1];
+            }
+            $required = $this->getRequiredValue($worksheetValue);
+            $row['required'] = $required;
+            $row['label'][$language] = $worksheetValue[2];
+            if (isset($worksheetValue[10])) {
+                $row['label']['en'] = $worksheetValue[10];
+            }
+            $row['_meta']['definition'][$language] = $worksheetValue[3];
+            if (isset($worksheetValue[11])) {
+                $row['_meta']['definition']['en'] = $worksheetValue[11];
+            }
+            $row['_meta']['isRecommended'] = false; # todo
+
+            $rows[] = $row;
+        }
+
+        return $rows;
     }
 
     private function getRequiredValue($worksheetValue)
     {
         $key = count($worksheetValue) - 1;
         $requiredFieldToCheck = $worksheetValue[$key];
-        if (isset($requiredFieldToCheck) && !empty($requiredFieldToCheck) &&
+        if (!empty($requiredFieldToCheck) &&
             (
                 preg_match("/erforderlich/i", $requiredFieldToCheck) ||
                 preg_match("/required/i", $requiredFieldToCheck)
@@ -339,7 +359,10 @@ class JsonFileController extends Controller
                     # condition for every field without predefined or specific values (BaseDataProvider)
                     if (!in_array(trim($worksheetValue[1]), $fieldsWithPredefinedValues)) {
                         $baseRow = $this->rowGeneratorFieldsWithoutPredefinedValues($worksheetValue, $language);
-                        $jsonDataArray['mappings'][0]['rows'][] = $baseRow;
+                        $cnt = count($baseRow);
+                        for ($j = 0; $j < $cnt; $j++) {
+                            $jsonDataArray['mappings'][0]['rows'][] = $baseRow[$j];
+                        }
 
                     # condition for every field with predefined values, less than 50 (KeyDataProvider)
                     } elseif (in_array(trim($worksheetValue[1]), $fieldsWithPredefinedValues) &&
