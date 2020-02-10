@@ -211,19 +211,16 @@ class JsonFileController extends Controller
     {
         $key = count($worksheetValue) - 1;
         $requiredFieldToCheck = $worksheetValue[$key];
-
-        if (!empty($requiredFieldToCheck) &&
+        if (isset($requiredFieldToCheck) && !empty($requiredFieldToCheck) &&
             (
                 preg_match("/erforderlich/i", $requiredFieldToCheck) ||
                 preg_match("/required/i", $requiredFieldToCheck)
             )
         ) {
-            $required = true;
+            return true;
         } else {
-            $required = false;
+            return false;
         }
-
-        return $required;
     }
 
     public static function convert_from_latin1_to_utf8_recursively($dat)
