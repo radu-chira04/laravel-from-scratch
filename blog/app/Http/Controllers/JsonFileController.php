@@ -115,7 +115,7 @@ class JsonFileController extends Controller
         if (isset($worksheetValue[10]) && $language != 'en') {
             $row['label']['en'] = $worksheetValue[10];
         }
-        $required = $this->getRequiredValue($worksheetValue, $language);
+        $required = $this->getRequiredValue($worksheetValue);
         $row['required'] = $required;
         $row['_meta']['definition'][$language] = $worksheetValue[3];
         if (isset($worksheetValue[11]) && $language != 'en') {
@@ -151,7 +151,7 @@ class JsonFileController extends Controller
         if (isset($worksheetValue[10]) && $language != 'en') {
             $row['label']['en'] = $worksheetValue[10];
         }
-        $required = $this->getRequiredValue($worksheetValue, $language);
+        $required = $this->getRequiredValue($worksheetValue);
         $row['required'] = $required;
         $row['_meta']['definition'][$language] = $worksheetValue[3];
         if (isset($worksheetValue[11]) && $language != 'en') {
@@ -192,7 +192,7 @@ class JsonFileController extends Controller
     private function rowGeneratorFieldsWithoutPredefinedValues($worksheetValue, $language)
     {
         $row['key'] = $worksheetValue[1];
-        $required = $this->getRequiredValue($worksheetValue, $language);
+        $required = $this->getRequiredValue($worksheetValue);
         $row['required'] = $required;
         $row['label'][$language] = $worksheetValue[2];
         if (isset($worksheetValue[10])) {
@@ -207,23 +207,10 @@ class JsonFileController extends Controller
         return $row;
     }
 
-    private function getRequiredValue($worksheetValue, $language)
+    private function getRequiredValue($worksheetValue)
     {
-        /**
-         *  check for Flat Files like :
-         *  - Flat.File.HomeImprovement.de.xlsm
-         *  - Flat.File.HomeImprovement.uk.xlsm
-         *  - Flat.File.HomeImprovement.fr.xlsm
-         */
-        if (preg_match("/HomeImprovement/i", $this->amazonProductType)) {
-            if (in_array($language, ['en', 'uk']) && isset($worksheetValue[6])) {
-                $requiredFieldToCheck = $worksheetValue[6];
-            } elseif (!in_array($language, ['en', 'uk']) && isset($worksheetValue[14])) {
-                $requiredFieldToCheck = $worksheetValue[14];
-            }
-        } elseif ($language == 'de' && isset($worksheetValue[5])) {
-            $requiredFieldToCheck = $worksheetValue[5];
-        }
+        $key = count($worksheetValue) - 1;
+        $requiredFieldToCheck = $worksheetValue[$key];
 
         if (!empty($requiredFieldToCheck) &&
             (
