@@ -10,11 +10,6 @@ class JsonFileController extends Controller
     const NEW_LINE = '<br/>';
 
     /**
-     * @var string
-     */
-    private $amazonProductType;
-
-    /**
      * @param string $method
      * @param int $line
      */
@@ -282,8 +277,7 @@ class JsonFileController extends Controller
         $this->printVariable($fileName, __METHOD__, __LINE__);
 
         $nameDetails = explode(".", $fileName);
-        $this->amazonProductType = $nameDetails[2];
-        if (preg_match("/HomeImprovement/i", $this->amazonProductType)) {
+        if (preg_match("/HomeImprovement/i", $nameDetails[2])) {
             $fieldValueSheet = 5;
             $fieldDetailSheet = 2;
         } else {
@@ -393,7 +387,8 @@ class JsonFileController extends Controller
             $jsonDataArray = self::convert_from_latin1_to_utf8_recursively($jsonDataArray);
             $jsonData = json_encode($jsonDataArray);
             $jsonDataArray = [];
-            file_put_contents('v1_' . $this->amazonProductType . '_' . strtoupper($language) . '.json', $jsonData);
+
+            file_put_contents('v1_' . $nameDetails[2] . '_' . strtoupper($language) . '.json', $jsonData);
             $jsonData = '';
 
             $runningTime = number_format((microtime(true) - $startTime) / 60, 2);
