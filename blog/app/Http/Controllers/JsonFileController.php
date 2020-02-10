@@ -198,7 +198,7 @@ class JsonFileController extends Controller
         }
 
         $rows = [];
-        for ($i = $startWith; $i < $endWith; $i++) {
+        for ($i = $startWith; $i <= $endWith; $i++) {
             if($multipleValuesFields){
                 $row['key'] = trim($match[1]) . $i;
             } else {
