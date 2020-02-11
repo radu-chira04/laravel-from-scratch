@@ -259,22 +259,9 @@ class JsonFileController extends Controller
         }
     }
 
-    public function JsonFlatFileGenerator()
+    public function JsonFlatFileGenerator($fileName)
     {
-        $flatFilesArray = [
-            'Flat.File.HomeImprovement.de.xlsm', 'Flat.File.HomeImprovement.fr.xlsm', 'Flat.File.HomeImprovement.uk.xlsm',
-            'Flat.File.AutoAccessory.de.xlsm', 'Flat.File.AutoAccessory_b2b.de.xlsm',
-            'Flat.File.Computers.de.xlsm', 'Flat.File.Computers_b2b.de.xlsm',
-            'Flat.File.ConsumerElectronics.de.xlsm', 'Flat.File.ConsumerElectronics_b2b.de.xlsm',
-            'Flat.File.Eyewear.de.xlsm', 'Flat.File.Eyewear_b2b.de.xlsm',
-            'Flat.File.FoodAndBeverages.de.xlsm', 'Flat.File.FoodAndBeverages_b2b.de.xlsm',
-            'Flat.File.FoodServiceAndJanSan.de.xlsm', 'Flat.File.FoodServiceAndJanSan_b2b.de.xlsm',
-            'Flat.File.Health.de.xlsm', 'Flat.File.Health_b2b.de.xlsm'
-        ];
-
-        $fileName = $flatFilesArray[1];
         $this->printVariable($fileName, __METHOD__, __LINE__);
-
         $nameDetails = explode(".", $fileName);
         if (preg_match("/HomeImprovement/i", $nameDetails[2])) {
             $fieldValueSheet = 5;
@@ -284,7 +271,6 @@ class JsonFileController extends Controller
             $fieldDetailSheet = 10;
         }
 
-        $startTime = microtime(true);
         $language = $nameDetails[3];
         $filePath = __DIR__ . "/" . $fileName;
         $tmpPath = $this->createTempFile($filePath);
@@ -381,18 +367,16 @@ class JsonFileController extends Controller
                 }
             }
 
-            $this->printVariable($jsonDataArray, __METHOD__, __LINE__);
-
+            //$this->printVariable($jsonDataArray, __METHOD__, __LINE__);
             $jsonDataArray = self::convert_from_latin1_to_utf8_recursively($jsonDataArray);
             $jsonData = json_encode($jsonDataArray);
             $jsonDataArray = [];
+            if (is_bool($jsonData)) {
+                $this->printVariable(json_last_error_msg(), __METHOD__, __LINE__);
+            }
 
             file_put_contents('v1_' . $nameDetails[2] . '_' . strtoupper($language) . '.json', $jsonData);
             $jsonData = '';
-
-            $runningTime = number_format((microtime(true) - $startTime) / 60, 2);
-            $this->printVariable($runningTime . ' Minutes', __METHOD__, __LINE__);
-
         } catch (\Exception $e) {
             $this->printVariable($e->getMessage(), __METHOD__, __LINE__);
         }
@@ -403,5 +387,62 @@ class JsonFileController extends Controller
             $this->printVariable($e->getMessage(), __METHOD__, __LINE__);
         }
     }
+
+    private function downloadXlsmFlatFile()
+    {
+        $content = file_get_contents(__DIR__ . "/amazon_ff_urls.txt");
+        $contentArray = explode("\n", $content);
+        $startWith = 0;
+        $endWith = 5;
+        foreach ($contentArray as $key => $url) {
+            if ($key >= $startWith && $key <= $endWith) {
+                $this->printVariable($url, __METHOD__, __LINE__);
+                $downloadedFileContents = file_get_contents($url);
+                if ($downloadedFileContents === false) {
+                    throw new Exception('Failed to download file at: ' . $url);
+                }
+
+                preg_match("/flat\.file.*/is", $url, $match);
+                $fileName = $match[0];
+                $save = file_put_contents($fileName, $downloadedFileContents);
+                if ($save === false) {
+                    throw new Exception('Failed to save file to: ', $fileName);
+                }
+            }
+        }
+    }
+
+    private function listXlsmFlatFiles()
+    {
+        $files = scandir(__DIR__);
+        $flatFilesArray = [];
+        foreach ($files as $file){
+            if(preg_match("/\.xlsm/i", $file)){
+                $flatFilesArray[] = $file;
+            }
+        }
+
+        return $flatFilesArray;
+    }
+
+    public function runJsonGenerator()
+    {
+        $this->downloadXlsmFlatFile();
+        $flatFilesArray = $this->listXlsmFlatFiles();
+        $this->printVariable($flatFilesArray, __METHOD__, __LINE__);
+        foreach ($flatFilesArray as $flatFile) {
+            try {
+                $startTime = microtime(true);
+                $this->JsonFlatFileGenerator($flatFile);
+                $runningTime = number_format((microtime(true) - $startTime) / 60, 2);
+                $this->printVariable($runningTime . ' Minutes', __METHOD__, __LINE__);
+                $this->printVariable("delete file: " . $flatFile, __METHOD__, __LINE__);
+                unlink($flatFile);
+            } catch (\Exception $e) {
+                $this->printVariable($e->getMessage(), __METHOD__, __LINE__);
+            }
+        }
+    }
+
 
 }
