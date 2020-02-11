@@ -186,8 +186,7 @@ class JsonFileController extends Controller
 
     private function rowGeneratorFieldsWithoutPredefinedValues($worksheetValue, $language)
     {
-        $startWith = 0;
-        $endWith = 1;
+        $startWith = $endWith = 0;
         $multipleValuesFields = false;
         preg_match('/(\w+)\d/', $worksheetValue[1], $match);
         preg_match_all('/\d+\.*\d*/', $worksheetValue[1], $matches);
