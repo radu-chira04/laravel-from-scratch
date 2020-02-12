@@ -186,6 +186,16 @@ class JsonFileController extends Controller
 
     private function rowGeneratorFieldsWithoutPredefinedValues($worksheetValue, $language)
     {
+        $hardCodedFields = [
+            ['key' => 'generic_keywords', 'value' => 'generic_keywords1 - generic_keywords5'],
+            ['key' => 'other_image_url', 'value' => 'other_image_url1 - other_image_url8']
+        ];
+        foreach ($hardCodedFields as $arr) {
+            if (isset($worksheetValue[1]) && preg_match("/" . $arr['key'] . "/is", $worksheetValue[1])) {
+                $worksheetValue[1] = $arr['value'];
+            }
+        }
+
         $startWith = $endWith = 0;
         $multipleValuesFields = false;
         preg_match('/(\w+)\d/', $worksheetValue[1], $match);
